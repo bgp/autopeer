@@ -1,0 +1,199 @@
+openapi: 3.0.3
+info:
+  title: AutoPeer
+  version: '1.0'
+  description: |-
+    AutoPeering Negotiation.
+
+servers:
+  - url: https://localhost:8080/v0.1
+paths:
+  /auth:
+    get:
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /list_locations:
+    get:
+      parameters:
+        - name: asn
+          in: query
+          description: where will you peer with asn
+          required: true
+          schema:
+            type: integer
+        - name: peer_type
+          in: query
+          description: type of peering
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /add_sessions:
+    post:
+      description: Requst peering
+      requestBody:
+        description: Create a new pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionArray'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionArray'
+        '300':
+          description: Request modified or partially accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionArray'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /get_status:
+    get:
+      parameters:
+        - name: asn
+          in: query
+          description: asn of requester
+          required: true
+          schema:
+            type: integer
+        - name: request_id
+          in: query
+          description: request identifier
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionArray'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+
+components:
+  schemas:
+    Location:
+      title: peering location
+      description: |-
+        Peering location identifier
+        `pdb:ix:$ID`
+      type: string
+    SessionStatus:
+      title: Session configuration status
+      description: |-
+        Add choices
+      type: string
+
+    SessionArray:
+      title: BGP Sessions
+      description: Array of BGP Sessions
+      type: array
+      items:
+        $ref: '#/components/schemas/Session'
+
+    Session:
+      title: BGP Session
+      description: BGP Session
+      type: object
+      properties:
+        local_asn:
+          type: integer
+        local_ip:
+          type: string
+        peer_asn:
+          type: integer
+        peer_ip:
+          type: string
+        peer_type:
+          type: string
+        md5: # TODO or auth: md5: $key?
+          type: string
+        location:
+          description: location for session `pdb:ix:$ID`
+          $ref: '#/components/schemas/Location'
+        status:
+          $ref: '#/components/schemas/SessionStatus'
+        uuid:
+          type: string
+          description: |-
+            unique identifier (also serves as request id)
+            Could separate into local_ and peer_?
+    Error:
+      title: Error
+      type: object
+      description: Error object for API responses
+      properties:
+        errors:
+          type: array
+          description: |-
+            Entity field specific valdiation and operational error messages.
+
+            {field_name} will be substituted with the name of the field in which the validation error occured.
+          items:
+            $ref: '#/components/schemas/FieldError'
+          readOnly: true
+      required:
+        - field_errors
+    FieldError:
+      title: FieldError
+      type: object
+      description: Error object for field-specific errors in API responses
+      properties:
+        name:
+          type: string
+          description: Field name
+          readOnly: true
+        errors:
+          type: array
+          description: List of error messages
+          items:
+            type: string
+          readOnly: true
+      required:
+        - name
+        - errors
+
+  responses:
+    ErrorResponse:
+      description: API Error response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                $ref: '#/components/schemas/Error'
+            required:
+              - errors
+          examples:
+            error-example:
+              value:
+                errors:
+                  - name: peer_asn
+                    messages:
+                      - asn not available at that location
