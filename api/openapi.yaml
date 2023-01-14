@@ -46,9 +46,9 @@ paths:
 
   /add_sessions:
     post:
-      description: Requst peering
+      description: Request peering
       requestBody:
-        description: Create a new pet in the store
+        description: Request to create peering sessions
         content:
           application/json:
             schema:
