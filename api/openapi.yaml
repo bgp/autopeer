@@ -21,16 +21,20 @@ paths:
       parameters:
         - name: asn
           in: query
-          description: where will you peer with asn
+          description: List avaible locations for peering with the given ASN
           required: true
           schema:
             type: integer
         - name: peer_type
           in: query
-          description: type of peering
+          description: Optional filter for only querying locations able to
+                       establish public or private connections.
           required: false
           schema:
             type: string
+            enum:
+              - public
+              - private
       responses:
         '200':
           description: OK
