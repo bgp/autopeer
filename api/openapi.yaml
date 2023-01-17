@@ -25,16 +25,13 @@ paths:
           required: true
           schema:
             type: integer
-        - name: peer_type
+        - name: location_type
           in: query
           description: Optional filter for only querying locations able to
                        establish public or private connections.
           required: false
           schema:
-            type: string
-            enum:
-              - public
-              - private
+            $ref: '#/components/schemas/LocationType'
       responses:
         '200':
           description: OK
@@ -107,6 +104,13 @@ components:
         Peering location identifier
         `pdb:ix:$ID`
       type: string
+
+    LocationType:
+      type: string
+      enum:
+        - private
+        - public
+
     SessionStatus:
       title: Session configuration status
       description: |-
