@@ -99,11 +99,14 @@ paths:
 components:
   schemas:
     Location:
-      title: peering location
-      description: |-
-        Peering location identifier
-        `pdb:ix:$ID`
-      type: string
+      title: Peering Location
+      description: location for session, contains an object with fields id `pdb:ix:$ID` and type PUBLIC or PRIVATE
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/LocationType'
 
     LocationType:
       type: string
@@ -142,7 +145,6 @@ components:
         md5: # TODO or auth: md5: $key?
           type: string
         location:
-          description: location for session `pdb:ix:$ID`
           $ref: '#/components/schemas/Location'
         status:
           $ref: '#/components/schemas/SessionStatus'
@@ -159,7 +161,7 @@ components:
         errors:
           type: array
           description: |-
-            Entity field specific valdiation and operational error messages.
+            Entity field specific validation and operational error messages.
 
             {field_name} will be substituted with the name of the field in which the validation error occured.
           items:
