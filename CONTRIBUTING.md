@@ -1,7 +1,7 @@
 
 ## How to contribute
 
-We welcome community contributions to the project.  Contributions to the repo will be covered by the Apache CLA.  Please sign the CLA by commenting `I have read the CLA Document and I hereby sign the CLA` in the Pull Rquest. Contributions will be reviewed through pull requests.   
+We welcome community contributions to the project.  Contributions to the repo will be covered by the Apache CLA.  Please sign the CLA by commenting `I have read the CLA Document and I hereby sign the CLA` in the Pull Request. Contributions will be reviewed through pull requests.   
 
 
 ## Getting Started
