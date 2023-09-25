@@ -5,8 +5,8 @@ Initial proof of concept for Automated Peering API
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Introduction into the topic
-This video is a recording of a presentation entitled "Peering API Automation" by Jenny Ramseyer (Meta), Matt Griswold (FullCtl) and Erica Salvaneschi (Cloudflare) given during NANOG88: https://www.youtube.com/watch?v=kMxsoplROYs The video motivates this work and shows the covered use-cases.
+## Introduction to the topic
+This video is a recording of a presentation entitled "Peering API Automation" by Jenny Ramseyer (Meta), Matt Griswold (FullCtl), and Erica Salvaneschi (Cloudflare) given during NANOG88: https://www.youtube.com/watch?v=kMxsoplROYs The video motivates this work and shows the covered use-cases.
 
 
 ## License
