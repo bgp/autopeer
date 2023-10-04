@@ -27,9 +27,10 @@ jobs:
           # PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: 'Ctl/signatures/version1/cla.json'
-          path-to-document: 'CONTRIBUTING.md'
+          path-to-document: 'https://github.com/bgp/autopeer/blob/main/CONTRIBUTING.md'
           # branch should not be protected
-          branch: 'main'
+          # use cla-signatures so we can leave main protected
+          branch: 'cla-signatures'
           # allowlist: user1,bot*
 
          # the followings are the optional inputs - If the optional inputs are not given, then default values will be taken
