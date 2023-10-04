@@ -6,8 +6,38 @@ Initial proof of concept for Automated Peering API
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Introduction to the topic
+
 This video is a recording of a presentation entitled "Peering API Automation" by Jenny Ramseyer (Meta), Matt Griswold (FullCtl), and Erica Salvaneschi (Cloudflare) given during NANOG88: https://www.youtube.com/watch?v=kMxsoplROYs The video motivates this work and shows the covered use-cases.
 
+
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Initiator
+    participant Peer
+    participant PeeringDB
+
+    Initiator->>PeeringDB: OIDC Authentication
+    PeeringDB->>Initiator: Provide auth code
+    Initiator->>Peer: Send auth code to Peer
+    Peer->>PeeringDB: Exchange auth code for token
+    PeeringDB->>Peer: Return token
+    Note left of Peer: Peer determines permissions based on token
+    Peer->>Initiator: Send OK back to Initiator
+
+    Initiator->>Peer: QUERY peering locations (peer type, ASN, auth code)
+    Peer->>Initiator: Reply with peering locations or errors (401, 406, 451, etc.)
+
+    alt 200 response from Peer
+        Initiator->>Peer: QUERY request status using request ID & auth code
+        Peer->>Initiator: Reply with session status (200, 404, 202, etc.)
+        loop until peering is complete
+            Initiator->>Peer: QUERY request status
+		    Peer->>Initiator: Session status
+        end
+    end
+```
 
 ## License
 
