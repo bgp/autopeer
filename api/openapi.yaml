@@ -63,6 +63,8 @@ paths:
 
         '400':
           $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
 
   /sessions:
     post:
@@ -89,6 +91,8 @@ paths:
                 $ref: '#/components/schemas/SessionArray'
         '400':
           $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
 
     get:
       description: Lists a set of sessions visible to the caller. Each session in the set contains a summary of its current status.
@@ -113,6 +117,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionArray'
         '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
           $ref: '#/components/responses/ErrorResponse'
 
 components:
