@@ -34,12 +34,13 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorResponse'
 
-  /list_locations:
+  /locations:
     get:
+      description: Lists all the visible locations to the caller.
       parameters:
         - name: asn
           in: query
-          description: List avaible locations for peering with the given ASN
+          description: List available locations for peering with the given ASN
           required: true
           schema:
             type: integer
@@ -63,9 +64,9 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorResponse'
 
-  /add_sessions:
+  /sessions:
     post:
-      description: Request peering
+      description: Requests a new set of sessions to be created.
       requestBody:
         description: Request to create peering sessions
         content:
@@ -89,8 +90,8 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorResponse'
 
-  /get_status:
     get:
+      description: Lists a set of sessions visible to the caller. Each session in the set contains a summary of its current status.
       parameters:
         - name: asn
           in: query
