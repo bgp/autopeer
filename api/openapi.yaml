@@ -51,16 +51,28 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/LocationType'
+        - name: max_results
+          in: query
+          description: Hint to paginate the request with the maximum number of results the caller is able to process.
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 100
+        - name: next_token
+          in: query
+          description: Indication of the offset to retrieve the next page on a previously initiated paginated request.
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Location'
-
+                $ref: '#/components/responses/ListLocationsResponse'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '403':
@@ -109,13 +121,28 @@ paths:
           required: false
           schema:
             type: string
+        - name: max_results
+          in: query
+          description: Hint to paginate the request with the maximum number of results the caller is able to process.
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 100
+        - name: next_token
+          in: query
+          description: Indication of the offset to retrieve the next page on a previously initiated paginated request.
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionArray'
+                $ref: '#/components/responses/ListSessionsResponse'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '403':
@@ -144,6 +171,13 @@ components:
       description: |-
         Add choices
       type: string
+
+    LocationArray:
+      title: Locations
+      description: Array of peering locations
+      type: array
+      items:
+        $ref: '#/components/schemas/Location'
 
     SessionArray:
       title: BGP Sessions
@@ -214,6 +248,26 @@ components:
         - errors
 
   responses:
+    ListLocationsResponse:
+      title: ListLocationsResponse
+      description: Response to a list for locations
+      type: object
+      properties:
+        next_token:
+          type: string
+        locations:
+          $ref: '#/components/schemas/LocationArray'
+
+    ListSessionsResponse:
+      title: ListSessionsResponse
+      description: Response to a list for sessions
+      type: object
+      properties:
+        next_token:
+          type: string
+        sessions:
+          $ref: '#/components/schemas/SessionArray'
+
     ErrorResponse:
       description: API Error response
       content:
