@@ -94,13 +94,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionArray'
+                $ref: '#/components/responses/CreateSessionsResponse'
         '300':
           description: Request modified or partially accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionArray'
+                $ref: '#/components/responses/CreateSessionsResponse'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '403':
@@ -179,6 +179,36 @@ components:
       items:
         $ref: '#/components/schemas/Location'
 
+    SessionRequestArray:
+      title: BGP Sessions requested
+      description: Array of BGP Sessions requested
+      type: array
+      items:
+        $ref: '#/components/schemas/SessionRequestItem'
+
+    SessionRequestItem:
+      title: BGP Session Request
+      description: BGP Session Request
+      type: object
+      properties:
+        local_asn:
+          type: integer
+        local_ip:
+          type: string
+        peer_asn:
+          type: integer
+        peer_ip:
+          type: string
+        peer_type:
+          type: string
+        md5: # TODO or auth: md5: $key?
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        item_id:
+          type: string
+          description: unique identifier of the session in an aggregate
+
     SessionArray:
       title: BGP Sessions
       description: Array of BGP Sessions
@@ -207,11 +237,14 @@ components:
           $ref: '#/components/schemas/Location'
         status:
           $ref: '#/components/schemas/SessionStatus'
-        uuid:
+        session_id:
           type: string
           description: |-
             unique identifier (also serves as request id)
             Could separate into local_ and peer_?
+        item_id:
+          type: string
+          description: unique identifier of the session in an aggregate
     Error:
       title: Error
       type: object
@@ -247,6 +280,15 @@ components:
         - name
         - errors
 
+  requests:
+    CreateSessionsRequest:
+      title: CreateSessionsRequest
+      description: Response to a request to create sessions
+      type: object
+      properties:
+        sessions:
+          $ref: '#/components/schemas/SessionRequestArray'
+
   responses:
     ListLocationsResponse:
       title: ListLocationsResponse
@@ -257,6 +299,16 @@ components:
           type: string
         locations:
           $ref: '#/components/schemas/LocationArray'
+
+    CreateSessionsResponse:
+      title: CreateSessionsResponse
+      description: Response to a request to create sessions
+      type: object
+      properties:
+        sessions:
+          $ref: '#/components/schemas/SessionArray'
+        errors:
+          $ref: '#/components/schemas/Error'
 
     ListSessionsResponse:
       title: ListSessionsResponse
