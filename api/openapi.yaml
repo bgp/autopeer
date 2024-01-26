@@ -115,12 +115,6 @@ paths:
           required: true
           schema:
             type: integer
-        - name: request_id
-          in: query
-          description: request identifier
-          required: false
-          schema:
-            type: string
         - name: max_results
           in: query
           description: Hint to paginate the request with the maximum number of results the caller is able to process.
@@ -146,6 +140,50 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '403':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /sessions/{session_id}:
+    get:
+      description: Retrieves a given session by it server-generated ID provided on creation.
+      parameters:
+        - name: session_id
+          in: path
+          description: Server-generated stable identifier for the session.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+
+    delete:
+      description: Requests to turn the session down and delete it from the server.
+      parameters:
+        parameters:
+        - name: session_id
+          in: path
+          description: Server-generated stable identifier for the session.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Session is scheduled for deletion and no longer usable
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
           $ref: '#/components/responses/ErrorResponse'
 
 components:
