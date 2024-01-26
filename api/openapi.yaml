@@ -142,6 +142,33 @@ paths:
         '403':
           $ref: '#/components/responses/ErrorResponse'
 
+    delete:
+      description: Requests to turn the session down and delete it from the server.
+      requestBody:
+        description: Request to delete peering sessions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionReferenceArray'
+        required: true
+      responses:
+        '200':
+          description: Sessions are scheduled for deletion and no longer usable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/DeleteSessionsResponse'
+        '300':
+          description: Request modified or partially accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/DeleteSessionsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+
   /sessions/{session_id}:
     get:
       description: Retrieves a given session by it server-generated ID provided on creation.
@@ -177,8 +204,12 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        '200':
           description: Session is scheduled for deletion and no longer usable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '403':
@@ -283,6 +314,25 @@ components:
         item_id:
           type: string
           description: unique identifier of the session in an aggregate
+
+    SessionReferenceArray:
+      title: BGP Session References
+      description: Array of BGP Session References
+      type: array
+      sessions:
+        $ref: '#/components/schemas/SessionReference'
+
+    SessionReference:
+      title: BGP Session Reference
+      description: Reference to univocally identify a BGP Session
+      type: object
+      properties:
+        session_id:
+          type: string
+          description: |-
+            unique identifier (also serves as request id)
+            Could separate into local_ and peer_?
+
     Error:
       title: Error
       type: object
@@ -357,6 +407,16 @@ components:
           type: string
         sessions:
           $ref: '#/components/schemas/SessionArray'
+
+    DeleteSessionsResponse:
+      title: DeleteSessionsResponse
+      description: Response to a request to delete sessions
+      type: object
+      properties:
+        sessions:
+          $ref: '#/components/schemas/SessionArray'
+        errors:
+          $ref: '#/components/schemas/Error'
 
     ErrorResponse:
       description: API Error response
