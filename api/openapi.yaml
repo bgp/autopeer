@@ -196,7 +196,6 @@ paths:
     delete:
       description: Requests to turn the session down and delete it from the server.
       parameters:
-        parameters:
         - name: session_id
           in: path
           description: Server-generated stable identifier for the session.
@@ -319,7 +318,7 @@ components:
       title: BGP Session References
       description: Array of BGP Session References
       type: array
-      sessions:
+      items:
         $ref: '#/components/schemas/SessionReference'
 
     SessionReference:
@@ -349,6 +348,7 @@ components:
           readOnly: true
       required:
         - field_errors
+
     FieldError:
       title: FieldError
       type: object
