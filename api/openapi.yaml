@@ -40,7 +40,7 @@ paths:
       parameters:
         - name: asn
           in: query
-          description: List available locations for peering with the given ASN
+          description: List available locations for peering with the given ASN (XXX is this local or peer ASN?)
           required: true
           schema:
             type: integer
@@ -86,7 +86,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionArray'
+              $ref: '#/components/schemas/CreateSessionsRequest'
         required: true
       responses:
         '200':
@@ -368,14 +368,18 @@ components:
         - name
         - errors
 
-  requests:
     CreateSessionsRequest:
       title: CreateSessionsRequest
       description: Response to a request to create sessions
       type: object
       properties:
+        return_url:
+          description: URL to requestor's endpoint to negotiate the session creation
+          type: string
         sessions:
           $ref: '#/components/schemas/SessionRequestArray'
+      required:
+        - sessions
 
   responses:
     ListLocationsResponse:
