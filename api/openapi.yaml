@@ -34,12 +34,13 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorResponse'
 
-  /list_locations:
+  /locations:
     get:
+      description: Lists all the visible locations to the caller.
       parameters:
         - name: asn
           in: query
-          description: List avaible locations for peering with the given ASN
+          description: List available locations for peering with the given ASN (XXX is this local or peer ASN?)
           required: true
           schema:
             type: integer
@@ -50,58 +51,19 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/LocationType'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Location'
-
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
-
-  /add_sessions:
-    post:
-      description: Request peering
-      requestBody:
-        description: Request to create peering sessions
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SessionArray'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionArray'
-        '300':
-          description: Request modified or partially accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionArray'
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
-
-  /get_status:
-    get:
-      parameters:
-        - name: asn
+        - name: max_results
           in: query
-          description: asn of requester
-          required: true
+          description: Hint to paginate the request with the maximum number of results the caller is able to process.
+          required: false
           schema:
             type: integer
-        - name: request_id
+            default: 0
+            minimum: 0
+            maximum: 100
+        - name: next_token
           in: query
-          description: request identifier
-          required: false
+          description: Indication of the offset to retrieve the next page on a previously initiated paginated request.
+          required: true
           schema:
             type: string
       responses:
@@ -110,8 +72,148 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionArray'
+                $ref: '#/components/responses/ListLocationsResponse'
         '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /sessions:
+    post:
+      description: Requests a new set of sessions to be created.
+      requestBody:
+        description: Request to create peering sessions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionsRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/CreateSessionsResponse'
+        '300':
+          description: Request modified or partially accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/CreateSessionsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+
+    get:
+      description: Lists a set of sessions visible to the caller. Each session in the set contains a summary of its current status.
+      parameters:
+        - name: asn
+          in: query
+          description: asn of requester
+          required: true
+          schema:
+            type: integer
+        - name: max_results
+          in: query
+          description: Hint to paginate the request with the maximum number of results the caller is able to process.
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 100
+        - name: next_token
+          in: query
+          description: Indication of the offset to retrieve the next page on a previously initiated paginated request.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ListSessionsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+
+    delete:
+      description: Requests to turn the session down and delete it from the server.
+      requestBody:
+        description: Request to delete peering sessions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionReferenceArray'
+        required: true
+      responses:
+        '200':
+          description: Sessions are scheduled for deletion and no longer usable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/DeleteSessionsResponse'
+        '300':
+          description: Request modified or partially accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/DeleteSessionsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /sessions/{session_id}:
+    get:
+      description: Retrieves a given session by it server-generated ID provided on creation.
+      parameters:
+        - name: session_id
+          in: path
+          description: Server-generated stable identifier for the session.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+
+    delete:
+      description: Requests to turn the session down and delete it from the server.
+      parameters:
+        - name: session_id
+          in: path
+          description: Server-generated stable identifier for the session.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session is scheduled for deletion and no longer usable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
           $ref: '#/components/responses/ErrorResponse'
 
 components:
@@ -137,6 +239,43 @@ components:
       description: |-
         Add choices
       type: string
+
+    LocationArray:
+      title: Locations
+      description: Array of peering locations
+      type: array
+      items:
+        $ref: '#/components/schemas/Location'
+
+    SessionRequestArray:
+      title: BGP Sessions requested
+      description: Array of BGP Sessions requested
+      type: array
+      items:
+        $ref: '#/components/schemas/SessionRequestItem'
+
+    SessionRequestItem:
+      title: BGP Session Request
+      description: BGP Session Request
+      type: object
+      properties:
+        local_asn:
+          type: integer
+        local_ip:
+          type: string
+        peer_asn:
+          type: integer
+        peer_ip:
+          type: string
+        peer_type:
+          type: string
+        md5: # TODO or auth: md5: $key?
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        item_id:
+          type: string
+          description: unique identifier of the session in an aggregate
 
     SessionArray:
       title: BGP Sessions
@@ -166,11 +305,33 @@ components:
           $ref: '#/components/schemas/Location'
         status:
           $ref: '#/components/schemas/SessionStatus'
-        uuid:
+        session_id:
           type: string
           description: |-
             unique identifier (also serves as request id)
             Could separate into local_ and peer_?
+        item_id:
+          type: string
+          description: unique identifier of the session in an aggregate
+
+    SessionReferenceArray:
+      title: BGP Session References
+      description: Array of BGP Session References
+      type: array
+      items:
+        $ref: '#/components/schemas/SessionReference'
+
+    SessionReference:
+      title: BGP Session Reference
+      description: Reference to univocally identify a BGP Session
+      type: object
+      properties:
+        session_id:
+          type: string
+          description: |-
+            unique identifier (also serves as request id)
+            Could separate into local_ and peer_?
+
     Error:
       title: Error
       type: object
@@ -187,6 +348,7 @@ components:
           readOnly: true
       required:
         - field_errors
+
     FieldError:
       title: FieldError
       type: object
@@ -206,7 +368,60 @@ components:
         - name
         - errors
 
+    CreateSessionsRequest:
+      title: CreateSessionsRequest
+      description: Response to a request to create sessions
+      type: object
+      properties:
+        return_url:
+          description: URL to requestor's endpoint to negotiate the session creation
+          type: string
+        sessions:
+          $ref: '#/components/schemas/SessionRequestArray'
+      required:
+        - sessions
+
   responses:
+    ListLocationsResponse:
+      title: ListLocationsResponse
+      description: Response to a list for locations
+      type: object
+      properties:
+        next_token:
+          type: string
+        locations:
+          $ref: '#/components/schemas/LocationArray'
+
+    CreateSessionsResponse:
+      title: CreateSessionsResponse
+      description: Response to a request to create sessions
+      type: object
+      properties:
+        sessions:
+          $ref: '#/components/schemas/SessionArray'
+        errors:
+          $ref: '#/components/schemas/Error'
+
+    ListSessionsResponse:
+      title: ListSessionsResponse
+      description: Response to a list for sessions
+      type: object
+      properties:
+        next_token:
+          type: string
+        sessions:
+          $ref: '#/components/schemas/SessionArray'
+
+    DeleteSessionsResponse:
+      title: DeleteSessionsResponse
+      description: Response to a request to delete sessions
+      type: object
+      properties:
+        sessions:
+          $ref: '#/components/schemas/SessionArray'
+        errors:
+          $ref: '#/components/schemas/Error'
+
     ErrorResponse:
       description: API Error response
       content:
