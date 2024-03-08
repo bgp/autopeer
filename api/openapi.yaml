@@ -63,7 +63,7 @@ paths:
         - name: next_token
           in: query
           description: Indication of the offset to retrieve the next page on a previously initiated paginated request.
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -95,12 +95,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/responses/CreateSessionsResponse'
-        '300':
-          description: Request modified or partially accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/CreateSessionsResponse'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '403':
@@ -127,7 +121,7 @@ paths:
         - name: next_token
           in: query
           description: Indication of the offset to retrieve the next page on a previously initiated paginated request.
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -154,12 +148,6 @@ paths:
       responses:
         '200':
           description: Sessions are scheduled for deletion and no longer usable
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/DeleteSessionsResponse'
-        '300':
-          description: Request modified or partially accepted
           content:
             application/json:
               schema:
@@ -274,9 +262,6 @@ components:
           type: string
         location:
           $ref: '#/components/schemas/Location'
-        item_id:
-          type: string
-          description: unique identifier of the session in an aggregate
 
     SessionArray:
       title: BGP Sessions
@@ -311,9 +296,6 @@ components:
           description: |-
             unique identifier (also serves as request id)
             Could separate into local_ and peer_?
-        item_id:
-          type: string
-          description: unique identifier of the session in an aggregate
 
     SessionReferenceArray:
       title: BGP Session References
